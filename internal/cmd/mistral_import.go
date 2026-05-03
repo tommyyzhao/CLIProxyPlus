@@ -105,9 +105,11 @@ func DoMistralImport(cfg *config.Config, opts *MistralImportOptions) {
 	fmt.Printf("Mistral API key imported from %s\n", source)
 	fmt.Printf("Auth file written to %s\n", fullPath)
 	fmt.Println("Default models served via openai-compatibility:")
-	fmt.Println("  - mistral-medium-3.5  (alias for mistral-vibe-cli-latest)")
-	fmt.Println("  - devstral-small      (alias for devstral-small-latest)")
-	fmt.Println("Customize models or aliases by adding a matching openai-compatibility entry in config.yaml.")
+	fmt.Println("  - mistral-vibe-cli-latest")
+	fmt.Println("  - mistral-medium-latest")
+	fmt.Println("  - devstral-small-latest")
+	fmt.Println("  - codestral-latest")
+	fmt.Println("Add an openai-compatibility entry named \"mistral\" in config.yaml to customize the model list or define aliases.")
 }
 
 func resolveVibeEnvPath(override string) (string, error) {
