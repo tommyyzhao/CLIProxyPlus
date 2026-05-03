@@ -76,9 +76,12 @@ func DoMistralImport(cfg *config.Config, opts *MistralImportOptions) {
 		return
 	}
 
+	// Default to a stable filename so re-running the importer overwrites the
+	// existing entry instead of polluting the auth pool with duplicate keys.
+	// Pass --mistral-label to keep multiple Mistral identities side by side.
 	label := strings.TrimSpace(opts.Label)
 	if label == "" {
-		label = fmt.Sprintf("%d", time.Now().UnixMilli())
+		label = "default"
 	}
 	fileName := fmt.Sprintf("mistral-%s.json", label)
 	fullPath := filepath.Join(authDir, fileName)
@@ -109,7 +112,9 @@ func DoMistralImport(cfg *config.Config, opts *MistralImportOptions) {
 	fmt.Println("  - mistral-medium-latest")
 	fmt.Println("  - devstral-small-latest")
 	fmt.Println("  - codestral-latest")
-	fmt.Println("Add an openai-compatibility entry named \"mistral\" in config.yaml to customize the model list or define aliases.")
+	fmt.Println("To override the model list (e.g., when Mistral renames or releases new models),")
+	fmt.Println("add an openai-compatibility entry named \"mistral\" in config.yaml — the executor")
+	fmt.Println("will use that list instead of the built-in defaults.")
 }
 
 func resolveVibeEnvPath(override string) (string, error) {
