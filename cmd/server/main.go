@@ -79,6 +79,11 @@ func main() {
 	var antigravityLogin bool
 	var kimiLogin bool
 	var xaiLogin bool
+	var mistralImport bool
+	var mistralAPIKey string
+	var mistralVibeEnv string
+	var mistralLabel string
+	var projectID string
 	var vertexImport string
 	var vertexImportPrefix string
 	var configPath string
@@ -98,6 +103,11 @@ func main() {
 	flag.BoolVar(&antigravityLogin, "antigravity-login", false, "Login to Antigravity using OAuth")
 	flag.BoolVar(&kimiLogin, "kimi-login", false, "Login to Kimi using OAuth")
 	flag.BoolVar(&xaiLogin, "xai-login", false, "Login to xAI using OAuth")
+	flag.BoolVar(&mistralImport, "mistral-import", false, "Import Mistral API key from mistral-vibe (~/.vibe/.env)")
+	flag.StringVar(&mistralAPIKey, "mistral-api-key", "", "Mistral API key override (use with -mistral-import)")
+	flag.StringVar(&mistralVibeEnv, "mistral-vibe-env", "", "Path to mistral-vibe .env file (use with -mistral-import)")
+	flag.StringVar(&mistralLabel, "mistral-label", "", "Custom label for the saved auth file (use with -mistral-import)")
+	flag.StringVar(&projectID, "project_id", "", "Project ID (Gemini only, not required)")
 	flag.StringVar(&configPath, "config", DefaultConfigPath, "Configure File Path")
 	flag.StringVar(&vertexImport, "vertex-import", "", "Import Vertex service account key JSON file")
 	flag.StringVar(&vertexImportPrefix, "vertex-import-prefix", "", "Prefix for Vertex model namespacing (use with -vertex-import)")
@@ -611,6 +621,12 @@ func main() {
 		cmd.DoKimiLogin(cfg, options)
 	} else if xaiLogin {
 		cmd.DoXAILogin(cfg, options)
+	} else if mistralImport {
+		cmd.DoMistralImport(cfg, &cmd.MistralImportOptions{
+			APIKey:      mistralAPIKey,
+			VibeEnvPath: mistralVibeEnv,
+			Label:       mistralLabel,
+		})
 	} else {
 		// In cloud deploy mode without config file, just wait for shutdown signals
 		if isCloudDeploy && !configFileExists {

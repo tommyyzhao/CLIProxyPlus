@@ -208,6 +208,29 @@ func synthesizeFileAuths(ctx *SynthesisContext, fullPath string, data []byte) []
 			}
 		}
 	}
+	// Mistral auth files store a permanent API key obtained via the mistral-vibe
+	// browser sign-in flow. Route them through the existing OpenAI-compatibility
+	// executor by populating the attributes its credential resolver expects.
+	if provider == "mistral" {
+		if apiKey, _ := metadata["api_key"].(string); strings.TrimSpace(apiKey) != "" {
+			a.Attributes["api_key"] = strings.TrimSpace(apiKey)
+		}
+		baseURL, _ := metadata["base_url"].(string)
+		if strings.TrimSpace(baseURL) == "" {
+			baseURL = "https://api.mistral.ai/v1"
+		}
+		a.Attributes["base_url"] = strings.TrimSpace(baseURL)
+		compatName, _ := metadata["compat_name"].(string)
+		if strings.TrimSpace(compatName) == "" {
+			compatName = "mistral"
+		}
+		a.Attributes["compat_name"] = strings.TrimSpace(compatName)
+		providerKey, _ := metadata["provider_key"].(string)
+		if strings.TrimSpace(providerKey) == "" {
+			providerKey = "openai-compatibility"
+		}
+		a.Attributes["provider_key"] = strings.TrimSpace(providerKey)
+	}
 	return []*coreauth.Auth{a}
 }
 

@@ -338,6 +338,20 @@ nonstream-keepalive-interval: 0
 #       - name: "kimi-k2.5"
 #         alias: "claude-opus-4.66"
 
+# Mistral can be configured manually as an openai-compatibility entry, or
+# imported from mistral-vibe via `cli-proxy-api -mistral-import` (which reads
+# ~/.vibe/.env and writes a self-contained file under the auth directory).
+# openai-compatibility:
+#   - name: "mistral"
+#     base-url: "https://api.mistral.ai/v1"
+#     api-key-entries:
+#       - api-key: "YOUR_MISTRAL_API_KEY"
+#     models:
+#       - name: "mistral-vibe-cli-latest"
+#         alias: "mistral-medium-3.5"
+#       - name: "devstral-small-latest"
+#         alias: "devstral-small"
+
 # Vertex API keys (Vertex-compatible endpoints, base-url is optional)
 # vertex-api-key:
 #   - api-key: "vk-123..."                        # x-goog-api-key header

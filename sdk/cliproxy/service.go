@@ -2103,6 +2103,16 @@ func (s *Service) registerModelsForAuthWithCache(ctx context.Context, a *coreaut
 			}
 			if isCompatAuth {
 				models = s.appendPluginModels(providerKey, nil)
+				if len(models) == 0 && strings.EqualFold(compatName, "mistral") {
+					// Mistral auth files store the api_key directly and do not require
+					// an explicit openai-compatibility config entry to be useful, so
+					// fall back to a sensible default model list when the user has not
+					// declared one in config.yaml.
+					models = defaultMistralCompatModels()
+					if providerKey == "" {
+						providerKey = "openai-compatibility"
+					}
+				}
 				if len(models) > 0 {
 					s.registerResolvedModelsForAuth(a, providerKey, applyModelPrefixes(models, a.Prefix, s.cfg != nil && s.cfg.ForceModelPrefix))
 				} else {
@@ -2553,6 +2563,34 @@ func buildCodexConfigModels(entry *config.CodexKey) []*ModelInfo {
 		return nil
 	}
 	return registry.WithCodexBuiltins(buildConfigModels(entry.Models, "openai", "openai"))
+}
+
+// defaultMistralCompatModels returns the model list mistral-vibe ships with by
+// default. Used when a Mistral auth file is loaded without a corresponding
+// openai-compatibility entry in config.yaml. Model IDs are the upstream names
+// so no alias resolution is required.
+func defaultMistralCompatModels() []*ModelInfo {
+	now := time.Now().Unix()
+	thinking := &registry.ThinkingSupport{Levels: []string{"low", "medium", "high"}}
+	ids := []string{
+		"mistral-vibe-cli-latest",
+		"mistral-medium-latest",
+		"devstral-small-latest",
+		"codestral-latest",
+	}
+	out := make([]*ModelInfo, 0, len(ids))
+	for _, id := range ids {
+		out = append(out, &ModelInfo{
+			ID:          id,
+			Object:      "model",
+			Created:     now,
+			OwnedBy:     "mistral",
+			Type:        "openai-compatibility",
+			DisplayName: id,
+			Thinking:    thinking,
+		})
+	}
+	return out
 }
 
 func rewriteModelInfoName(name, oldID, newID string) string {
