@@ -2576,7 +2576,6 @@ func defaultMistralCompatModels() []*ModelInfo {
 		"mistral-vibe-cli-latest",
 		"mistral-medium-latest",
 		"devstral-small-latest",
-		"codestral-latest",
 	}
 	out := make([]*ModelInfo, 0, len(ids))
 	for _, id := range ids {
